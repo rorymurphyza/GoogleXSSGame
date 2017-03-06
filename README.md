@@ -61,10 +61,24 @@ Looking at how we can manipulate this, we see that the only place we can inject 
       }, false);
     </script>
 ```
-The `chooseTag(num)` function is where the input is processed, so let's see if we can abuse this. This function is going to insert an HTML element with a title and the picture link. Interestingly, the title part has the `num` input being passed through a `parseInt(num` function, but the link to the picture does not. We know that we cannot inject anything here, as the `parseInt(num` function will just return a NaN response. However, looking at the next line, we see that the `num` parameter is simply used there without being tested or escaped. This looks like a great place to break in.
+The `chooseTag(num)` function is where the input is processed, so let's see if we can abuse this. This function is going to insert an HTML element with a title and the picture link. Interestingly, the title part has the `num` input being passed through a `parseInt(num)` function, but the link to the picture does not. We know that we cannot inject anything here, as the `parseInt(num)` function will just return a NaN response. However, looking at the next line, we see that the `num` parameter is simply used there without being tested or escaped. This looks like a great place to break in.
 
 If we insert a `1` as the `num` parameter, we expect the website to operate as usual. However, if we can manipulate what is inserted here, we could potentially cause an injection like we did in the previous challenge. Looking at the like that sources the `img` in the JavaScript, let's make it look like this:
 ```HTML
 <img src="/static/level3/cloud1" onerror="alert("Winner!")/>
 ```
 To do this, we just needed to add the input `1' onerror='alert("Winner!")'/>` to the URL.
+I found that this doesn't work in Firefox as firefox seems use URL encoding to replace the ' and " symbols. I'm not 100% sure why, but Chrome doesn't do this.
+
+##Challenge 4
+Let's take a look at what we have here. We have a freetext box (that takes anything) which kicks off a timer to display a message. The box functions correctly when we put in a number and anything else just causes the spinner to keep going and going and going. Looking at what happens when we press the button, we see that we put a call to the `startTimer()` function and then draw the spinner using the `onload` feature of an image. This looks like a fantastic place to try break.
+
+The HTML element that is draw looks like this for an input of 60:
+```HTML
+<img src="/static/loading.gif" onload="startTimer('60');">
+```
+We want to manipulate it to look like this:
+```HTML
+<img src="/static/loading.gif" onload="startTimer(''); alert('Winner!');">
+```
+So we can simply insert the string `'); alert('Winner!'` into the textbox to break it.
