@@ -1,5 +1,5 @@
 # GoogleXSSGame
-Solutions to the Google XSS game.
+Solutions to the Google XSS game. I've put in notes on any tricks or thoughts I had while doing this, so hopefully this helps if (like me) this is the first time you are doing something like this.
 
 Warning, contains spoilers so be careful if you are playing the games. 
 
@@ -82,3 +82,15 @@ We want to manipulate it to look like this:
 <img src="/static/loading.gif" onload="startTimer(''); alert('Winner!');">
 ```
 So we can simply insert the string `'); alert('Winner!'` into the textbox to break it.
+
+##Challenge 5
+
+Here we have a very simple web app that will grab an input email address and sign it up for a service. Looking at the code running on the site, you can see that although there is a nice textbox that looks like it will be a great place to break in, nothing in actually done with the text input. However, looking at the scripting here, we see that on each page the next page is displayed in the URL. Looking closer, whatever is put in this URL is passed through a decision tree and eventually ends up as an `href` HTML link. Now this looks like something we can use.
+
+The easiest thing to do here would be to create a fake link and an onClick event, similar to what we would have done before. The name of the challenge is "Breaking protocol" though, so maybe there is another way. The `href` tag actually allows us to insert a JavaScript function in place of a link and this sounds like something we can abuse nicely.
+A little bit of playing around shows that we can insert this:
+```HTML
+javascript:alert("Winner!")
+```
+This will then turn the link that is created into a starter for the JavaScript function which will display the alert.
+
