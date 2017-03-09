@@ -94,3 +94,17 @@ javascript:alert("Winner!")
 ```
 This will then turn the link that is created into a starter for the JavaScript function which will display the alert.
 
+##Challenge 6
+Time for the last bit of this game. We now want to load an external JavaScript file into the site. With this, it means we can do all sorts of naughty things. From what we have done before, we can see that the URL attack is the way to go. The parameter `frame#` serves as a placeholder for whatever script we want loaded into the service. The service will attempt to retrieve this as part of the normal scriptloading process in the `head` section of the HTML.
+
+Before we start trying to get a file loaded, we need to have a file to load. I don't have my own server running where I can host the file so I'm going to go with the hint of using the google.com/jsapi service. If we navigate to http://www.google.com/jsapi?callback=foo, we see a very long file that ends in `foo();`. With a bit of guesswork, we can see that if we use the parameter `callback=alert` we will get back a JavaScript file which contains the line `alert();`. This should be exactly what we want.
+
+Putting the link `http://www.google.com/jsapi?callback=alert` directly into the URL of the website, we now trigger a warning that says that we cannot use some containing the http:// string. Looking at the piece of the website that triggers this warning, we see that it is quite a simple validator that specifically looks for the string "http://...". Perhaps we could get past this by simply not putting the "http:" part into our link?
+
+```HTML
+//www.google.com/jsapi?callback=alert
+```
+This gets past the validator and loads the JavaScript file that we looked at earlier. 
+
+#Conclusion
+If you are reading this and know of any other similar challeneges, please let me know.
