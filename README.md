@@ -17,7 +17,7 @@ https://xss-game.appspot.com/level1/frame?query=<script>alert("Winner!")</script
 
 ##Challenge 2
 We now have a blog type website, where we can enter text that gets displayed as a new entry. 
-Entering our solution from Challenge 1 simply creates a new blog post with our entry in the `<blockquote>` tags. We know that this won't work for us. Instead of a direct injection, let's try an error injection to see if we can abuse JavaScript a little bit. Using the `img` tag, let's see if we can use an `onerror` as suggested in the hints:
+Entering our solution from Challenge 1 simply creates a new blog post with our entry in the `<blockquote>` tags. We know that this won't work for us. Instead of a direct injection, let's try an error injection to see if we can abuse JavaScript a little bit. Using the `<img>` tag, let's see if we can use an `onerror` as suggested in the hints:
 ```JavaScript
 <img src="this.gif" onerror=alert("Winner!") />
 ```
@@ -47,23 +47,13 @@ Looking at how we can manipulate this, we see that the only place we can inject 
  
         // Tell parent we've changed the tab
         top.postMessage(self.location.toString(), "*");
-      }
- 
-      window.onload = function() { 
-        chooseTab(self.location.hash.substr(1) || "1");
-      }
- 
-      // Extra code so that we can communicate with the parent page
-      window.addEventListener("message", function(event){
-        if (event.source == parent) {
-          chooseTab(self.location.hash.substr(1));
-        }
-      }, false);
+      } 
+      ...
     </script>
 ```
 The `chooseTag(num)` function is where the input is processed, so let's see if we can abuse this. This function is going to insert an HTML element with a title and the picture link. Interestingly, the title part has the `num` input being passed through a `parseInt(num)` function, but the link to the picture does not. We know that we cannot inject anything here, as the `parseInt(num)` function will just return a NaN response. However, looking at the next line, we see that the `num` parameter is simply used there without being tested or escaped. This looks like a great place to break in.
 
-If we insert a `1` as the `num` parameter, we expect the website to operate as usual. However, if we can manipulate what is inserted here, we could potentially cause an injection like we did in the previous challenge. Looking at the like that sources the `img` in the JavaScript, let's make it look like this:
+If we insert a `1` as the `num` parameter, we expect the website to operate as usual. However, if we can manipulate what is inserted here, we could potentially cause an injection like we did in the previous challenge. Looking at the link that sources the `img` in the JavaScript, let's make it look like this:
 ```HTML
 <img src="/static/level3/cloud1" onerror="alert("Winner!")/>
 ```
@@ -73,7 +63,7 @@ I found that this doesn't work in Firefox as firefox seems use URL encoding to r
 ##Challenge 4
 Let's take a look at what we have here. We have a freetext box (that takes anything) which kicks off a timer to display a message. The box functions correctly when we put in a number and anything else just causes the spinner to keep going and going and going. Looking at what happens when we press the button, we see that we put a call to the `startTimer()` function and then draw the spinner using the `onload` feature of an image. This looks like a fantastic place to try break.
 
-The HTML element that is draw looks like this for an input of 60:
+The HTML element that is drawn looks like this for an input of 60:
 ```HTML
 <img src="/static/loading.gif" onload="startTimer('60');">
 ```
@@ -107,4 +97,4 @@ Putting the link `http://www.google.com/jsapi?callback=alert` directly into the 
 This gets past the validator and loads the JavaScript file that we looked at earlier. 
 
 #Conclusion
-If you are reading this and know of any other similar challeneges, please let me know.
+If you are reading this and know of any other similar challenges, please let me know.
