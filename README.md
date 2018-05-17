@@ -96,5 +96,11 @@ Putting the link `http://www.google.com/jsapi?callback=alert` directly into the 
 ```
 This gets past the validator and loads the JavaScript file that we looked at earlier. 
 
+Another option is to use a data URL:
+
+```
+data:text/plain;charset=utf-8,alert%28123%29
+```
+
 #Conclusion
 If you are reading this and know of any other similar challenges, please let me know.
